@@ -79,13 +79,13 @@ int init_connection(const char *address, const char *port)
     sin.sin_port = htons((uint16_t) *port);
     sin.sin_family = AF_INET;
 
+    print_startup_info(address, port);
+
     if(connect(sock,(SOCKADDR *) &sin, sizeof(SOCKADDR)) == SOCKET_ERROR)
     {
         perror("connect()");
         exit(errno);
     }
-
-    print_startup_info(address, port);
 
     return sock;
 }
@@ -93,8 +93,6 @@ int init_connection(const char *address, const char *port)
 void print_startup_info(const char *address, const char *port){
     printf("[+] Hello %s.\n", USER_NAME);
     printf("[+] We are trying connecting you to the server at %s:%s....\n", address, port);
-    printf("[+] You are successfully connected!\n");
-    printf("[+] Start chatting others or just type :help to list all available commands.\n");
 }
 
 void render_user_input() {
