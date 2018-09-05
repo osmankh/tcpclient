@@ -3,14 +3,15 @@
 #include <errno.h>
 #include <string.h>
 #include "client.h"
+SOCKET sock;
 
-void client(const char *address, const char *name)
+void client(const char *address, const char *port, const char *name)
 {
 
     USER_NAME = name;
-    SOCKET sock = init_connection(address);
+    sock = init_connection(address, port);
     char buffer[BUF_SIZE];
-
+	
     fd_set rdfs;
     write_server(sock, name);
     while(1)
@@ -45,17 +46,18 @@ void client(const char *address, const char *name)
             int n = read_server(sock, buffer);
             if(n == 0)
             {
-                printf("Server disconnected !\n");
+                printf("\r\t[!] Server Disconnected!\n");
                 break;
             }
-            printf("Server: ");
+            printf("\r\t");
             puts(buffer);
+            render_user_input();
         }
     }
     end_connection(sock);
 }
 
-int init_connection(const char *address)
+int init_connection(const char *address, const char *port)
 {
     SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
     SOCKADDR_IN sin = { 0 };
@@ -74,7 +76,7 @@ int init_connection(const char *address)
     }
 
     sin.sin_addr = *(IN_ADDR *) hostinfo->h_addr;
-    sin.sin_port = htons(PORT);
+    sin.sin_port = htons((uint16_t) *port);
     sin.sin_family = AF_INET;
 
     if(connect(sock,(SOCKADDR *) &sin, sizeof(SOCKADDR)) == SOCKET_ERROR)
@@ -83,23 +85,42 @@ int init_connection(const char *address)
         exit(errno);
     }
 
-    print_startup_info(address);
+    print_startup_info(address, port);
 
     return sock;
 }
 
-void print_startup_info(const char *address){
-    fprintf(stdout, "[+] %s, you are successfully connected to the server @%s\n", USER_NAME, address);
-    fprintf(stdout, "[+] Type :help to list all available command\n");
-    render_user_input();
+void print_startup_info(const char *address, const char *port){
+    printf("[+] Hello %s.\n", USER_NAME);
+    printf("[+] We are trying connecting you to the server at %s:%s....\n", address, port);
+    printf("[+] You are successfully connected!\n");
+    printf("[+] Start chatting others or just type :help to list all available commands.\n");
 }
 
 void render_user_input() {
-    puts("\t > ");
+    printf("\r\t%s\t> ", USER_NAME);
+    fflush(stdout);
 }
 
 void execute_command(int sock, const char *command) {
-    write_server(sock, command);
+    if (strncmp(command, ":help", strlen(":help")) == 0) {
+        print_help();
+    } else {
+        write_server(sock, command);
+    }
+}
+
+void print_help() {
+    printf("\r\n[HELP] TCP Client\n");
+    printf("Usage: client <address> <port> <username>...\n");
+    printf("Options:\n");
+    printf("\t:help\t\tDisplay this information.\n");
+    printf("\t:who\t\tAsks the server for a list of connected users.\n");
+    printf("\t:quit\t\tLeaves the server.\n\n");
+    printf("Author: Osman KHODER.\n");
+    printf("Email: osman.khoder@isae.edu.lb\n");
+    printf("Version: 1.2.\n\n\n");
+    render_user_input();
 }
 
 void end_connection(int sock)
@@ -125,16 +146,18 @@ void write_server(SOCKET sock, const char *buffer)
     {
         perror("send()");
         exit(errno);
+    } else {
+        render_user_input();
     }
 }
 
 int main(int argc, char **argv)
 {
-    if(argc < 2)
+    if(argc < 3)
     {
-        printf("Usage : %s [address] [pseudo]\n", argv[0]);
+        printf("Usage : %s <address> <port> <username>...\n", argv[0]);
         return EXIT_FAILURE;
     }
-    client(argv[1], argv[2]);
+    client(argv[1], argv[2], argv[3]);
     return EXIT_SUCCESS;
 }

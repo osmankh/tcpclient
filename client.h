@@ -14,15 +14,15 @@ typedef struct sockaddr_in SOCKADDR_IN;
 typedef struct sockaddr SOCKADDR;
 typedef struct in_addr IN_ADDR;
 #define CRLF "\r\n"
-#define PORT 1977
 #define BUF_SIZE 1024
 const char *USER_NAME;
-void client(const char *address, const char *name);
-int init_connection(const char *address);
+void client(const char *address, const char *port, const char *name);
+int init_connection(const char *address, const char *port);
 void end_connection(int sock);
-void print_startup_info(const char *address);
+void print_startup_info(const char *address, const char *port);
 void execute_command(int sock, const char *command);
 void render_user_input();
+void print_help();
 int read_server(SOCKET sock, char *buffer);
 void write_server(SOCKET sock, const char *buffer);
 #endif /* guard */
