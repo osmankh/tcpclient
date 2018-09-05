@@ -1,3 +1,8 @@
+/// TCP Client
+/// TCP Client / Server system for communicating with several simultaneously on the network.
+/// @author Osman KHODER
+/// @see <https://github.com/osmankh/tcpclient>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -5,6 +10,10 @@
 #include "client.h"
 SOCKET sock;
 
+/// Initiate the Client Object and connect to the server
+/// @param address The server address
+/// @param port The server port
+/// @param name username to login with
 void client(const char *address, const char *port, const char *name)
 {
 
@@ -57,6 +66,9 @@ void client(const char *address, const char *port, const char *name)
     end_connection(sock);
 }
 
+/// Initiate client connection to the server
+/// @param address the server address
+/// @param port the server port
 int init_connection(const char *address, const char *port)
 {
     SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -90,16 +102,24 @@ int init_connection(const char *address, const char *port)
     return sock;
 }
 
+
+/// Print Client startup inforamtion
+/// @param address the server address
+/// @param port the server port
 void print_startup_info(const char *address, const char *port){
     printf("[+] Hello %s.\n", USER_NAME);
     printf("[+] We are trying connecting you to the server at %s:%s....\n", address, port);
 }
 
+/// Render User input. eg: username >
 void render_user_input() {
     printf("\r\t%s\t> ", USER_NAME);
     fflush(stdout);
 }
 
+/// Execute a user command
+/// @param sock Server socket
+/// @param command User command
 void execute_command(int sock, const char *command) {
     if (strncmp(command, ":help", strlen(":help")) == 0) {
         print_help();
@@ -108,6 +128,7 @@ void execute_command(int sock, const char *command) {
     }
 }
 
+/// Print help Inforamtion
 void print_help() {
     printf("\r\n[HELP] TCP Client\n");
     printf("Usage: client <address> <port> <username>...\n");
@@ -121,11 +142,16 @@ void print_help() {
     render_user_input();
 }
 
+/// Close a socket
+/// @param sock SOCKET to close
 void end_connection(int sock)
 {
     closesocket(sock);
 }
 
+/// Read Server socket
+/// @param sock server socket
+/// @param buffer Buffer the set server data in.
 int read_server(SOCKET sock, char *buffer)
 {
     int n = 0;
@@ -138,6 +164,9 @@ int read_server(SOCKET sock, char *buffer)
     return n;
 }
 
+/// Send Data to the server
+/// @param sock server socket
+/// @param buffer Data to send to the server
 void write_server(SOCKET sock, const char *buffer)
 {
     if(send(sock, buffer, strlen(buffer), 0) < 0)
@@ -149,6 +178,9 @@ void write_server(SOCKET sock, const char *buffer)
     }
 }
 
+/// the main function
+/// @param argc Integer number of arguments
+/// @param argv array of arguments
 int main(int argc, char **argv)
 {
     if(argc < 3)
