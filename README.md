@@ -21,11 +21,6 @@ $ ./client <server-ip> <port> <username>
 - :who&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Asks the server for the list of connected users.
 
 
-### Todos
-
- - code documentation
-
-
 Are you looking for the [server] ?
 
 License
